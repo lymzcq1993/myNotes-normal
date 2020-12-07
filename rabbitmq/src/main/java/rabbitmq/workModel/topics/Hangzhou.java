@@ -25,7 +25,7 @@ public class Hangzhou {
            @Override
            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                String json=new String(body);
-               System.out.println("杭州收到了:"+json);
+               System.out.println("topics:杭州收到了:"+json);
                //System.out.println("tagId:"+envelope.getDeliveryTag());
                try {
                    Thread.sleep(500);
