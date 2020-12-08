@@ -25,4 +25,7 @@ public class RabbitMqConstant {
     public static final String TOPIC_Q_US = "topic.us";
     public static final String TOPIC_EX_WEATHER = "topic.exchange";
 
+    /******** confirm   **************/
+    public static final String CONFIRM_EX_HUJIAN = "confirm.exchange";
+    public static final String CONFIRM_Q_HUJIAN = "confirm.hujian";
 }
