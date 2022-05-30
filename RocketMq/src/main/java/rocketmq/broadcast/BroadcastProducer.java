@@ -1,4 +1,4 @@
-package rocketmq.simple;
+package rocketmq.broadcast;
 
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -10,21 +10,19 @@ import rocketmq.RocketmqConst;
  * @author hujian
  * @date 2022/5/28 10:31
  */
-public class OneWayProducer {
+public class BroadcastProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
-        DefaultMQProducer producer = new DefaultMQProducer(RocketmqConst.SIMPLE_P_GROUP);
+        DefaultMQProducer producer = new DefaultMQProducer(RocketmqConst.BROADCAST_P_GROUP);
         //设置队列数量，默认4
         producer.setDefaultTopicQueueNums(8);
         producer.setNamesrvAddr(RocketmqConst.NAMESRV_ADDRS);
 
         producer.start();
-        for (int i = 0; i < 100; i++) {
-            Message message = new Message(RocketmqConst.SIMPLE_TOPIC,RocketmqConst.SIMPLE_TAG,("sendOnewayMessage:"+i).getBytes());
+        for (int i = 0; i < 10; i++) {
+            Message message = new Message(RocketmqConst.BROADCAST_TOPIC,"broadcast_tag",("broadcast:"+i).getBytes());
             try {
                 producer.sendOneway(message);
-            } catch (RemotingException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (RemotingException | InterruptedException e) {
                 e.printStackTrace();
             }
         }

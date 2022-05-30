@@ -1,4 +1,4 @@
-package rocketmq.batch;
+package rocketmq.filter;
 
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -10,18 +10,18 @@ import rocketmq.RocketmqConst;
 import java.util.ArrayList;
 import java.util.List;
 
-/**批量消息,目的是减少网络IO
+/**消息过滤
  * @author hujian
  * @since 2022-05-28 12:37
  */
-public class ProducerBatch {
+public class ProducerFilter {
     public static void main(String[] args) throws MQClientException, InterruptedException, RemotingException, MQBrokerException {
-        DefaultMQProducer producer = new DefaultMQProducer(RocketmqConst.BATCH_P_GROUP);
+        DefaultMQProducer producer = new DefaultMQProducer(RocketmqConst.FILTER_P_GROUP,true);
         producer.setNamesrvAddr(RocketmqConst.NAMESRV_ADDRS);
         producer.start();
         List<Message> messageList = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            Message message = new Message(RocketmqConst.BATCH_TOPIC,RocketmqConst.BATCH_TAG,"keys"+i,("batchMessgae"+i).getBytes());
+            Message message = new Message(RocketmqConst.FILTER_TOPIC,RocketmqConst.FILTER_TAG+i,("filter"+i).getBytes());
             messageList.add(message);
         }
         producer.send(messageList);

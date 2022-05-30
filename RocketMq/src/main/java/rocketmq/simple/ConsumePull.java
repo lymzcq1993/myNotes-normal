@@ -10,8 +10,7 @@ import java.util.List;
 
 /**
  * @author hujian
- * @description
- * @date 2020/12/16 11:05
+ * @date 2022/5/28 12:13
  */
 public class ConsumePull {
     public static void main(String[] args) throws MQClientException {
@@ -20,14 +19,12 @@ public class ConsumePull {
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         consumer.subscribe(RocketmqConst.SIMPLE_TOPIC,"*");
         consumer.start();
-        try {
             while (true){
                 List<MessageExt> messageExts = consumer.poll();
-                //System.out.println(messageExts);
-                System.out.println(new String(messageExts.get(0).getBody()));
+                for (MessageExt messageExt : messageExts) {
+                    System.out.println("收到了消息producer的消息---");
+                    System.out.println("消息内容:"+new String(messageExt.getBody()));
+                }
             }
-        }catch (Exception e){
-
         }
-    }
 }

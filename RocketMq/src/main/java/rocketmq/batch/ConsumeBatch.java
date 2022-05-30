@@ -1,38 +1,37 @@
-package rocketmq.simple;
+package rocketmq.batch;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import rocketmq.RocketmqConst;
 
 import java.util.List;
 
 /**
- * 推模式获取消息
  * @author hujian
- * @description
- * @date 2022/5/28 12:13
+ * @since 2022-05-28 12:37
  */
-public class ConsumePush {
+public class ConsumeBatch {
     public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketmqConst.SIMPLE_C_PUSH_GROUP);
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketmqConst.BATCH_C_GROUP);
         consumer.setNamesrvAddr(RocketmqConst.NAMESRV_ADDRS);
-        consumer.subscribe(RocketmqConst.SIMPLE_TOPIC,"*");
-        consumer.setConsumeTimestamp("20181109221800");
+        consumer.subscribe(RocketmqConst.BATCH_TOPIC,"*");
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                for (MessageExt messageExt : list) {
-                    System.out.println("收到了消息producer的消息---");
-                    System.out.println("消息内容:"+new String(messageExt.getBody()));
+            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messages, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+                for (MessageExt message : messages) {
+                    // 打印接收消息的时间
+                    System.out.println("Receive message[msgId=" + message.getMsgId() + "] " + new String(message.getBody()));
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
         consumer.start();
-        System.out.println("simple consume start");
+        System.out.println("batch consume start");
     }
 }

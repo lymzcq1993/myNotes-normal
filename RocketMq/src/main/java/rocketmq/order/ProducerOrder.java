@@ -14,8 +14,7 @@ import java.util.List;
 
 /**顺序消息
  * @author hujian
- * @description
- * @date 2020/12/16 11:32
+ * @date 2022/5/28 10:31
  */
 public class ProducerOrder {
     public static void main(String[] args) throws MQClientException, InterruptedException {
@@ -24,11 +23,15 @@ public class ProducerOrder {
 
         producer.start();
         for (int i = 0; i < 10; i++) {
-            int order = i;
-            for (int j = 0; j < 5; j++) {
-                Message message = new Message(RocketmqConst.ORDER_TOPIC,"order_"+order,"KEY_"+order,
-                        ("order_"+order+",step"+j).getBytes());
+            for (int j = 0; j < 10; j++) {
+
+                Message message = new Message(RocketmqConst.ORDER_TOPIC,"order_"+i,"KEY_"+i,
+                        ("order_"+i+",step"+j).getBytes());
                 try {
+                    //select选择器用来控制发送到哪个队列，有3个实现
+                    //SelectMessageQueueByHash 通过hash来保证存取到同一个队列,这里的重写等同于该实现类
+                    //SelectMessageQueueByMachineRoom    通过机器指定
+                    //SelectMessageQueueByRandom   随机分发
                     SendResult sendResult = producer.send(message, new MessageQueueSelector() {
                         /**
                          * 第三个参数是send()方法第三个参数传进来的业务参数
@@ -37,6 +40,7 @@ public class ProducerOrder {
                          * @param o
                          * @return
                          */
+                        @Override
                         public MessageQueue select(List<MessageQueue> list, Message message, Object o) {
                             Integer orderId = (Integer) o;
                             //这里要保证一个order的消息都放进同一个队列
@@ -44,7 +48,7 @@ public class ProducerOrder {
                             int index = orderId % list.size();
                             return list.get(index);
                         }
-                    }, order);
+                    }, i);
                     System.out.println(sendResult);
                 } catch (RemotingException e) {
                     e.printStackTrace();
